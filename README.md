@@ -3,7 +3,9 @@
 
 
 使用   _wxmKeyboardManager = [WXMKeyboardManager wxm_keyboardManagerWithUnder:scrollview];
+
 类型
+
 WXMReferenceSelf ,           根据自己位置判断
 
 WXMReferenceNone,         无响应
