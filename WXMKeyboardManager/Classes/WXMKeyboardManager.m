@@ -4,7 +4,7 @@
 //  Created by wq on 2019/4/21.
 //  Copyright © 2019年 wq. All rights reserved.
 //
-#define MaxKeyBoardH 282 // 键盘最大高度
+#define MaxKeyBoardH 282 /**  键盘最大高度 */
 #define KWindow [[[UIApplication sharedApplication] delegate] window]
 #define KNotificationCenter [NSNotificationCenter defaultCenter]
 #define KHeight [UIScreen mainScreen].bounds.size.height
@@ -41,6 +41,7 @@
     [manager wxm_initializationPperation:underView];
     return manager;
 }
+
 /** 初始化 */
 - (void)wxm_initializationPperation:(UIView *)underView  {
     self.underView = underView;
@@ -76,8 +77,11 @@
 /* 递归获取所有的textField */
 - (void)getParentViewOfTextField:(UIView *)supView {
     for (UIView *subView in supView.subviews) {
-        if ([subView isKindOfClass:[UITextField class]]) [self.textFieldArray addObject:subView];
-        else if(subView.subviews.count > 0) [self getParentViewOfTextField:subView];
+        if ([subView isKindOfClass:[UITextField class]]) {
+            [self.textFieldArray addObject:subView];
+        } else if(subView.subviews.count > 0) {
+            [self getParentViewOfTextField:subView];
+        }
     }
 }
 
@@ -99,12 +103,13 @@
 /** 计算底部位置 */
 - (void)calculationPosition {
     self.judgeLocationBottom = @[].mutableCopy;
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField*_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField* obj, NSUInteger idx, BOOL *stop) {
         CGRect rect = [obj convertRect:obj.bounds toView:KWindow];
         CGFloat locationBottom = rect.origin.y + obj.frame.size.height;
         [self.judgeLocationBottom addObject:@(locationBottom)];
     }];
 }
+
 - (void)setNextSureView:(UIView *)nextSureView {
     _nextSureView = nextSureView;
     CGRect rect = [nextSureView convertRect:nextSureView.bounds toView:KWindow];
@@ -123,7 +128,6 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(wxmKeyboardReference:)]) {
         self.referenceType = [self.delegate wxmKeyboardReference:self.currentTextField];
     }
-    
     
     /** 不偏移 */
     if (self.referenceType == WXMReferenceNone) return;
@@ -199,9 +203,11 @@
             [self.underView sendSubviewToBack:self.responseView];
         }
     } completion:^(BOOL finished) {
-        if (finished) self.animation = NO;
-        if (finished) self.loadFinished = YES;
-        if (finished) self.showKeyboard = YES;
+        if (finished) {
+            self.animation = NO;
+            self.loadFinished = YES;
+            self.showKeyboard = YES;
+        }
     }];
 }
 
@@ -210,6 +216,7 @@
     self.showKeyboard = NO;
     [self keyBoardHide];
 }
+
 - (void)keyBoardHide {
     if (!self.needDisplacement) return;
     if (!self.enabled) return;
@@ -219,14 +226,17 @@
     [UIView animateWithDuration:0.25 animations:^{
         if (self.scrollView) [self.scrollView setContentOffset:CGPointZero];
         if (!self.scrollView) self.underView.frame = self.oldRect;
-    } completion:^(BOOL finished) { if (finished) self.animation = NO; }];
+    } completion:^(BOOL finished) {
+        if (finished) self.animation = NO;
+    }];
 }
+
 /** 获取响应的textField */
 - (UITextField *)currentTextField {
     _currentTextField = nil;
     __block BOOL currentText = NO;
     
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj, NSUInteger idx, BOOL *stop) {
         if (obj.isFirstResponder) self.currentTextField = obj;
         if (currentText == YES) {
             self.nextTextField = obj;
@@ -237,8 +247,13 @@
     
     return _currentTextField;
 }
+
 /** 监听 */
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
+    
     if (self.showKeyboard == NO && self.referenceType != WXMReferenceNone) return;
     if (self.animation) return;
     if (self.responsing) return;
@@ -261,16 +276,18 @@
     if (ignoreModels == WXMIgnoreModels_x) screenH = 812;
     if (KHeight >= screenH) _needDisplacement = NO;
 }
+
 /** 按钮 */
 - (void)setNextOptions:(BOOL)nextOptions {
     _nextOptions = nextOptions;
     if (!_nextOptions) return;
     NSInteger count = self.textFieldArray.count - 1;
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj, NSUInteger idx, BOOL *stop) {
         obj.returnKeyType = UIReturnKeyNext;
         if (idx == count) obj.returnKeyType = UIReturnKeyDone;
     }];
 }
+
 - (void)endRespon {
     [self.underView endEditing:YES];
 }
@@ -282,8 +299,10 @@
     
     if (self.scrollView) {
         if (clickBlack) {
-            [self.scrollView addObserver:self forKeyPath:@"contentOffset"
-                                 options:NSKeyValueObservingOptionNew context:nil];
+            [self.scrollView addObserver:self
+                              forKeyPath:@"contentOffset"
+                                 options:NSKeyValueObservingOptionNew
+                                 context:nil];
         } else {
             @try {
                 [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
@@ -305,6 +324,7 @@
     }
     return _responseView;
 }
+
 - (void)dealloc {
     _textFieldArray = nil;
     _judgeLocationBottom = nil;
