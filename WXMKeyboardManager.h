@@ -9,15 +9,16 @@
 #import <UIKit/UIKit.h>
 
 /* 判断参照物 默认 WXMReferenceSelf */
-typedef NS_ENUM(NSUInteger,WXMReference) {
+typedef NS_ENUM(NSUInteger, WXMReference) {
     WXMReferenceSelf = 0,
-    WXMReferenceNone,
-    WXMReferenceNextTF,
+    WXMReferenceNone,     /** 不偏移 */
+    WXMReferenceRecovery, /** 还原 */
+    WXMReferenceNextTF,   /** 下一个tf */
     WXMReferenceSureButton
 };
 
 /* 需要忽略的机型 例：WXMIgnoreModels_5 则5以上机型没有效果 */
-typedef NS_ENUM(NSUInteger,WXMIgnoreModels) {
+typedef NS_ENUM(NSUInteger, WXMIgnoreModels) {
     WXMIgnoreModels_4 = 0,
     WXMIgnoreModels_5,
     WXMIgnoreModels_8,
@@ -50,10 +51,10 @@ typedef NS_ENUM(NSUInteger,WXMIgnoreModels) {
 @property (nonatomic, assign) WXMIgnoreModels ignoreModels;
 
 /** 确认按钮 nil默认WXMReferenceSel模式 */
-@property (nonatomic, weak) UIView * nextSureView;
+@property (nonatomic, weak) UIView *nextSureView;
 
 /** 代理 不设置默认WXMReferenceSelf模式 */
-@property (nonatomic, weak) id <WXMKeyboardProtocol>delegate;
+@property (nonatomic, weak) id<WXMKeyboardProtocol> delegate;
 
 /** 初始化 underView 移动的试图 self.view 或 scrollerview */
 /** 如果用自动布局 用scrollerview作为底视图 */

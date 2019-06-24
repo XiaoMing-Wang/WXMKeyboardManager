@@ -4,13 +4,13 @@
 //  Created by wq on 2019/4/21.
 //  Copyright © 2019年 wq. All rights reserved.
 //
-#define MaxKeyBoardH 282 // 键盘最大高度
+#define MaxKeyBoardH 282 /**  键盘最大高度 */
 #define KWindow [[[UIApplication sharedApplication] delegate] window]
 #define KNotificationCenter [NSNotificationCenter defaultCenter]
 #define KHeight [UIScreen mainScreen].bounds.size.height
 #import "WXMKeyboardManager.h"
 
-@interface WXMKeyboardManager ()<UIScrollViewDelegate>
+@interface WXMKeyboardManager () <UIScrollViewDelegate>
 @property (nonatomic, weak) UIView *underView;
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, strong) UIControl *responseView;
@@ -25,7 +25,7 @@
 @property (nonatomic, assign) BOOL showKeyboard;
 @property (nonatomic, assign) BOOL responsing;
 @property (nonatomic, assign) BOOL needDisplacement;
-@property (nonatomic, assign)  WXMReference referenceType;
+@property (nonatomic, assign) WXMReference referenceType;
 @property (nonatomic, assign) CGFloat locationBottom;
 @property (nonatomic, assign) CGFloat nextSureBottom;
 @property (nonatomic, assign) CGFloat keyboardTop;
@@ -41,6 +41,7 @@
     [manager wxm_initializationPperation:underView];
     return manager;
 }
+
 /** 初始化 */
 - (void)wxm_initializationPperation:(UIView *)underView  {
     self.underView = underView;
@@ -49,7 +50,7 @@
     self.rollback = NO;
     self.enabled = YES;
     self.needDisplacement = YES;
-    self.bottomSpace = .25;
+    self.bottomSpace = 0.25;
     if ([underView isKindOfClass:[UIScrollView class]]) {
         self.scrollView = (UIScrollView *)underView;
     }
@@ -99,12 +100,13 @@
 /** 计算底部位置 */
 - (void)calculationPosition {
     self.judgeLocationBottom = @[].mutableCopy;
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField*_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField* obj, NSUInteger idx, BOOL *stop) {
         CGRect rect = [obj convertRect:obj.bounds toView:KWindow];
         CGFloat locationBottom = rect.origin.y + obj.frame.size.height;
         [self.judgeLocationBottom addObject:@(locationBottom)];
     }];
 }
+
 - (void)setNextSureView:(UIView *)nextSureView {
     _nextSureView = nextSureView;
     CGRect rect = [nextSureView convertRect:nextSureView.bounds toView:KWindow];
@@ -127,8 +129,7 @@
     
     /** 不偏移 */
     if (self.referenceType == WXMReferenceNone) return;
-    
-    
+        
     /** 根据自己判断 */
     void (^accordingSelf)(void) = ^(void) {
         NSInteger idex = [self.textFieldArray indexOfObject:self.currentTextField];
@@ -140,6 +141,7 @@
     
     /** 根据自身判断 */
     if (self.referenceType == WXMReferenceSelf) accordingSelf();
+    
     
     /** 根据下一个tf */
     if (self.referenceType == WXMReferenceNextTF) {
@@ -171,7 +173,7 @@
     if (keyboardH == 0) return;
     if (self.animation) return;
     
-    /** 找不到需要判断的 textField */
+    /** 找不到需要判断的textField */
     if (self.currentTextField == nil) {
         [self keyBoardHide];
         return;
@@ -210,6 +212,7 @@
     self.showKeyboard = NO;
     [self keyBoardHide];
 }
+
 - (void)keyBoardHide {
     if (!self.needDisplacement) return;
     if (!self.enabled) return;
@@ -221,12 +224,13 @@
         if (!self.scrollView) self.underView.frame = self.oldRect;
     } completion:^(BOOL finished) { if (finished) self.animation = NO; }];
 }
+
 /** 获取响应的textField */
 - (UITextField *)currentTextField {
     _currentTextField = nil;
     __block BOOL currentText = NO;
     
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj, NSUInteger idx, BOOL *stop) {
         if (obj.isFirstResponder) self.currentTextField = obj;
         if (currentText == YES) {
             self.nextTextField = obj;
@@ -261,12 +265,13 @@
     if (ignoreModels == WXMIgnoreModels_x) screenH = 812;
     if (KHeight >= screenH) _needDisplacement = NO;
 }
+
 /** 按钮 */
 - (void)setNextOptions:(BOOL)nextOptions {
     _nextOptions = nextOptions;
     if (!_nextOptions) return;
     NSInteger count = self.textFieldArray.count - 1;
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *_Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj, NSUInteger idx, BOOL *stop) {
         obj.returnKeyType = UIReturnKeyNext;
         if (idx == count) obj.returnKeyType = UIReturnKeyDone;
     }];
@@ -297,14 +302,15 @@
 
 - (UIControl *)responseView {
     if (!_responseView) {
+        UIControlEvents event = UIControlEventTouchUpInside;
         _responseView = [[UIControl alloc] initWithFrame:self.underView.bounds];
         _responseView.backgroundColor = [UIColor clearColor];
-        [_responseView addTarget:self action:@selector(endRespon)
-                forControlEvents:UIControlEventTouchUpInside];
+        [_responseView addTarget:self action:@selector(endRespon) forControlEvents:event];
         _responseView.hidden = YES;
     }
     return _responseView;
 }
+
 - (void)dealloc {
     _textFieldArray = nil;
     _judgeLocationBottom = nil;
