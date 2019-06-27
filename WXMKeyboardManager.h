@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, WXMIgnoreModels) {
     WXMIgnoreModels_8p,
     WXMIgnoreModels_x,
 };
-@protocol WXMKeyboardProtocol<NSObject>
+@protocol WXMKeyboardProtocol <NSObject>
 @optional
 - (WXMReference)wxmKeyboardReference:(UITextField *)textField;
 @end

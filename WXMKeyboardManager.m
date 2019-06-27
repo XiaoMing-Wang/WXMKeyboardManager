@@ -31,6 +31,7 @@
 @property (nonatomic, assign) CGFloat keyboardTop;
 @property (nonatomic, assign) CGFloat keyboardHeight;
 @property (nonatomic, assign) CGRect oldRect;
+ @property (nonatomic, assign) CGFloat oldContentOffsetY;
 @end
 
 
@@ -53,7 +54,10 @@
     self.bottomSpace = 0.25;
     if ([underView isKindOfClass:[UIScrollView class]]) {
         self.scrollView = (UIScrollView *)underView;
+        self.oldContentOffsetY = self.scrollView.contentOffset.y;
     }
+    
+    /** 点击收回事件 */
     self.clickBlack = YES;
 
     /* 递归获取所有的textField */
@@ -65,6 +69,8 @@
     
     /** 计算底部距离 */
     [self calculationPosition];
+    
+    /** 更改确定键 */
     self.nextOptions = YES;
     
     [KNotificationCenter addObserver:self selector:@selector(keyBoardWillShow:)
@@ -241,6 +247,7 @@
     
     return _currentTextField;
 }
+
 /** 监听 */
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (self.showKeyboard == NO && self.referenceType != WXMReferenceNone) return;
@@ -276,26 +283,24 @@
         if (idx == count) obj.returnKeyType = UIReturnKeyDone;
     }];
 }
+
 - (void)endRespon {
     [self.underView endEditing:YES];
 }
 
-/** GET SET */
+/** 设置触摸收回键盘 */
 - (void)setClickBlack:(BOOL)clickBlack {
     _clickBlack = clickBlack;
     [_responseView removeFromSuperview];
-    
     if (self.scrollView) {
-        if (clickBlack) {
-            [self.scrollView addObserver:self forKeyPath:@"contentOffset"
-                                 options:NSKeyValueObservingOptionNew context:nil];
-        } else {
-            @try {
-                [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
-            } @catch (NSException *exception) {} @finally {};
-        }
+        @try {
+            if (clickBlack) {
+                [self.scrollView addObserver:self forKeyPath:@"contentOffset"
+                                     options:NSKeyValueObservingOptionNew context:nil];
+            } else [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
+        } @catch (NSException *exception) {} @finally {};
     } else {
-        if (clickBlack) [_underView insertSubview:_responseView atIndex:0];
+        if (clickBlack) [_underView insertSubview:self.responseView atIndex:0];
         if (!clickBlack) [_responseView removeFromSuperview];
     }
 }
