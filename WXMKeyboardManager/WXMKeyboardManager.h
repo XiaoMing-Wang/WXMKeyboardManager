@@ -57,6 +57,6 @@ typedef NS_ENUM(NSUInteger,WXMIgnoreModels) {
 
 /** 初始化 underView 移动的试图 self.view 或 scrollerview */
 /** 如果用自动布局 用scrollerview作为底视图 */
-+ (instancetype)wxm_keyboardManagerWithUnder:(UIView *)underView;
++ (instancetype)keyboardManagerWithUnder:(UIView *)underView;
 
 @end

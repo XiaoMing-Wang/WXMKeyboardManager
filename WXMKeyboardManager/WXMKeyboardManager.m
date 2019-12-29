@@ -36,14 +36,14 @@
 
 @implementation WXMKeyboardManager
 
-+ (instancetype)wxm_keyboardManagerWithUnder:(UIView *)underView {
++ (instancetype)keyboardManagerWithUnder:(UIView *)underView {
     WXMKeyboardManager * manager = [WXMKeyboardManager new];
-    [manager wxm_initializationPperation:underView];
+    [manager initializationPperation:underView];
     return manager;
 }
 
 /** 初始化 */
-- (void)wxm_initializationPperation:(UIView *)underView  {
+- (void)initializationPperation:(UIView *)underView  {
     self.underView = underView;
     self.oldRect = self.underView.frame;
     self.textFieldArray = @[].mutableCopy;
@@ -236,7 +236,7 @@
     _currentTextField = nil;
     __block BOOL currentText = NO;
     
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj, NSUInteger idx, BOOL *stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj,NSUInteger idx,BOOL *stop) {
         if (obj.isFirstResponder) self.currentTextField = obj;
         if (currentText == YES) {
             self.nextTextField = obj;
@@ -282,7 +282,7 @@
     _nextOptions = nextOptions;
     if (!_nextOptions) return;
     NSInteger count = self.textFieldArray.count - 1;
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj, NSUInteger idx, BOOL *stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj,NSUInteger idx,BOOL *stop) {
         obj.returnKeyType = UIReturnKeyNext;
         if (idx == count) obj.returnKeyType = UIReturnKeyDone;
     }];
