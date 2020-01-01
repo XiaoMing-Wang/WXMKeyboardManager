@@ -25,14 +25,13 @@
 @property (nonatomic, assign) BOOL showKeyboard;
 @property (nonatomic, assign) BOOL responsing;
 @property (nonatomic, assign) BOOL needDisplacement;
-@property (nonatomic, assign)  WXMReference referenceType;
+@property (nonatomic, assign) WXMReference referenceType;
 @property (nonatomic, assign) CGFloat locationBottom;
 @property (nonatomic, assign) CGFloat nextSureBottom;
 @property (nonatomic, assign) CGFloat keyboardTop;
 @property (nonatomic, assign) CGFloat keyboardHeight;
 @property (nonatomic, assign) CGRect oldRect;
 @end
-
 
 @implementation WXMKeyboardManager
 
@@ -86,7 +85,7 @@
 }
 
 /** 排序 */
-- (void)quickExhautArray  {
+- (void)quickExhautArray {
     for (int i = 0; i < self.textFieldArray.count; ++i) {
         for (int j = 0; j < self.textFieldArray.count - 1 - i; ++j) {
             UITextField * aTextField = self.textFieldArray[j];
@@ -103,7 +102,7 @@
 /** 计算底部位置 */
 - (void)calculationPosition {
     self.judgeLocationBottom = @[].mutableCopy;
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField* obj, NSUInteger idx, BOOL *stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField* obj,NSUInteger idx, BOOL*stop){
         CGRect rect = [obj convertRect:obj.bounds toView:KWindow];
         CGFloat locationBottom = rect.origin.y + obj.frame.size.height;
         [self.judgeLocationBottom addObject:@(locationBottom)];
@@ -236,7 +235,7 @@
     _currentTextField = nil;
     __block BOOL currentText = NO;
     
-    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj,NSUInteger idx,BOOL *stop) {
+    [self.textFieldArray enumerateObjectsUsingBlock:^(UITextField *obj,NSUInteger idx,BOOL*stop) {
         if (obj.isFirstResponder) self.currentTextField = obj;
         if (currentText == YES) {
             self.nextTextField = obj;
@@ -246,23 +245,6 @@
     }];
     
     return _currentTextField;
-}
-
-/** 监听 */
-- (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context {
-    
-    if (self.showKeyboard == NO && self.referenceType != WXMReferenceNone) return;
-    if (self.animation) return;
-    if (self.responsing) return;
-    
-    self.responsing = YES;
-    [self.underView endEditing:YES];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self.responsing = NO;
-    });
 }
 
 /** 设置屏幕高度判断  */
@@ -296,19 +278,7 @@
 - (void)setClickBlack:(BOOL)clickBlack {
     _clickBlack = clickBlack;
     [_responseView removeFromSuperview];
-    
-    if (self.scrollView) {
-        if (clickBlack) {
-            [self.scrollView addObserver:self
-                              forKeyPath:@"contentOffset"
-                                 options:NSKeyValueObservingOptionNew
-                                 context:nil];
-        } else {
-            @try {
-                [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
-            } @catch (NSException *exception) {} @finally {};
-        }
-    } else {
+    if (!self.scrollView) {
         if (clickBlack) [_underView insertSubview:_responseView atIndex:0];
         if (!clickBlack) [_responseView removeFromSuperview];
     }
@@ -318,8 +288,7 @@
     if (!_responseView) {
         _responseView = [[UIControl alloc] initWithFrame:self.underView.bounds];
         _responseView.backgroundColor = [UIColor clearColor];
-        [_responseView addTarget:self action:@selector(endRespon)
-                forControlEvents:UIControlEventTouchUpInside];
+        [_responseView addTarget:self action:@selector(endRespon) forControlEvents:UIControlEventTouchUpInside];
         _responseView.hidden = YES;
     }
     return _responseView;
@@ -329,10 +298,6 @@
     _textFieldArray = nil;
     _judgeLocationBottom = nil;
     [KNotificationCenter removeObserver:self];
-    
-    @try {
-        [self.scrollView removeObserver:self forKeyPath:@"contentOffset"];
-    } @catch (NSException *exception) {} @finally {};
 }
 @end
 

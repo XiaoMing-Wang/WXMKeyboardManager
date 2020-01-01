@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-/* 判断参照物 默认 WXMReferenceSelf */
+/* 判断参照物 默认WXMReferenceSelf */
 typedef NS_ENUM(NSUInteger,WXMReference) {
     WXMReferenceSelf = 0,
     WXMReferenceNone,
