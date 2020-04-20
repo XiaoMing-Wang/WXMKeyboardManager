@@ -4,13 +4,13 @@
 //  Created by wq on 2019/4/21.
 //  Copyright © 2019年 wq. All rights reserved.
 //
-#define MaxKeyBoardH 282 /**  键盘最大高度 */
+#define MaxKeyBoardH 282    /**  键盘最大高度 */
 #define KWindow [[[UIApplication sharedApplication] delegate] window]
 #define KNotificationCenter [NSNotificationCenter defaultCenter]
 #define KHeight [UIScreen mainScreen].bounds.size.height
 #import "WXMKeyboardManager.h"
 
-@interface WXMKeyboardManager ()<UIScrollViewDelegate>
+@interface WXMKeyboardManager () <UIScrollViewDelegate>
 @property (nonatomic, weak) UIView *underView;
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, strong) UIControl *responseView;
@@ -36,8 +36,9 @@
 @implementation WXMKeyboardManager
 
 + (instancetype)keyboardManagerWithUnder:(UIView *)underView {
-    WXMKeyboardManager * manager = [WXMKeyboardManager new];
+    WXMKeyboardManager *manager = [WXMKeyboardManager new];
     [manager initializationPperation:underView];
+   
     return manager;
 }
 
@@ -46,7 +47,7 @@
     self.underView = underView;
     self.oldRect = self.underView.frame;
     self.textFieldArray = @[].mutableCopy;
-    self.rollback = NO;
+    self.rollback = YES;
     self.enabled = YES;
     self.needDisplacement = YES;
     self.bottomSpace = .25;
@@ -160,7 +161,8 @@
     if (self.referenceType == WXMReferenceSureButton) {
         if (self.nextSureView == nil) accordingSelf();
         if (self.nextSureView != nil) {
-            self.locationBottom = self.nextSureBottom + 10 + self.bottomSpace;
+            if (self.bottomSpace == 0.25) self.bottomSpace = 10;
+            self.locationBottom = self.nextSureBottom + self.bottomSpace;
             [self keyBoardSelfTextField:notification];
         }
     }
@@ -182,12 +184,17 @@
     
     /** 键盘位置*/
     _keyboardHeight = MAX(keyboardH, _keyboardHeight);
+    
+    if (self.rollback) _keyboardHeight = keyboardH;
+    
     _keyboardTop = KHeight - _keyboardHeight;
     CGFloat distance = _locationBottom - _keyboardTop;
     
     /** 禁止回滚 or 距离不够*/
     if (distance <= 0) return;
-    if (self.rollback == NO && self.scrollView.contentOffset.y >= distance) return;
+    if (self.rollback == NO && self.scrollView && self.scrollView.contentOffset.y >= distance){
+        return;
+    }
     
     /** 弹起 */
     if (self.loadFinished) self.animation = YES;

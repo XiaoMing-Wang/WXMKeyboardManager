@@ -5,8 +5,8 @@
 //  Copyright © 2019年 wq. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 /* 判断参照物 默认WXMReferenceSelf */
 typedef NS_ENUM(NSUInteger,WXMReference) {
@@ -34,7 +34,7 @@ typedef NS_ENUM(NSUInteger,WXMIgnoreModels) {
 /** 开启 默认YES */
 @property (nonatomic, assign) BOOL enabled;
 
-/** 回滚 是否回滚 默认NO */
+/** 回滚 是否回滚 默认YES */
 @property (nonatomic, assign) BOOL rollback;
 
 /** 是否添加点击收回事件 默认YES */
